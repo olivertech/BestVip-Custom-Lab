@@ -16,7 +16,7 @@
         <span class="eyebrow">Acesso interno</span>
         <h1>Painel BestVip</h1>
         <p>Entre com as credenciais administrativas para gerenciar campanhas, produtos e pesquisas.</p>
-        <label><span>Usuário</span><input asp-for="Username" /></label>
+        <label><span>Email</span><input asp-for="Email" type="email" autocomplete="username" /></label>
         <label><span>Senha</span><input asp-for="Password" type="password" /></label>
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {

@@ -7,19 +7,38 @@ public sealed class VisitorRegistrationRequest
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public string WhatsApp { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public DateOnly? BirthDate { get; set; }
     public string? AgeRange { get; set; }
     public string? Instagram { get; set; }
+    public string Interests { get; set; } = string.Empty;
     public Guid? TrafficSourceId { get; set; }
     public bool AcceptPrivacyPolicy { get; set; }
     public bool AcceptMarketing { get; set; }
     public string ReturnUrl { get; set; } = "/Survey";
 }
 
-public sealed record RegistrationResultDto(Guid VisitorId, string RedirectUrl);
+public sealed record RegistrationResultDto(Guid VisitorId, string RedirectUrl, string Email);
+
+public sealed class VisitorLoginRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string ReturnUrl { get; set; } = "/Survey";
+}
+
+public sealed record VisitorLoginResultDto(Guid VisitorId, string Email, string FullName, string RedirectUrl);
+
+public sealed class AdminLoginRequest
+{
+    public string Email { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public sealed record AdminLoginResultDto(Guid AdminUserId, string Email, string Name);
 
 public sealed class SurveyAnswerInput
 {

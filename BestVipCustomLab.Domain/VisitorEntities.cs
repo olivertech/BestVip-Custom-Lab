@@ -6,16 +6,30 @@ public sealed class Visitor
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
     public string WhatsApp { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public DateOnly? BirthDate { get; set; }
     public string? AgeRange { get; set; }
     public string? Instagram { get; set; }
+    public string Interests { get; set; } = string.Empty;
     public Guid? TrafficSourceId { get; set; }
     public bool AllowMarketing { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? LastLoginAtUtc { get; set; }
     public List<ConsentRecord> ConsentRecords { get; set; } = [];
+}
+
+public sealed class AdminUser
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
+    public DateTimeOffset CreatedAtUtc { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? LastLoginAtUtc { get; set; }
 }
 
 public sealed class TrafficSource

@@ -16,6 +16,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
     public DbSet<SurveyResponse> SurveyResponses => Set<SurveyResponse>();
     public DbSet<SurveyAnswer> SurveyAnswers => Set<SurveyAnswer>();
     public DbSet<Visitor> Visitors => Set<Visitor>();
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
     public DbSet<TrafficSource> TrafficSources => Set<TrafficSource>();
     public DbSet<ConsentRecord> ConsentRecords => Set<ConsentRecord>();
     public DbSet<VipInterest> VipInterests => Set<VipInterest>();
@@ -40,7 +41,17 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         modelBuilder.Entity<Visitor>(entity =>
         {
             entity.HasIndex(x => x.Email).IsUnique();
+            entity.Property(x => x.PasswordHash).HasMaxLength(400);
+            entity.Property(x => x.Interests).HasMaxLength(1200);
             entity.HasMany(x => x.ConsentRecords).WithOne().HasForeignKey(x => x.VisitorId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<AdminUser>(entity =>
+        {
+            entity.HasIndex(x => x.Email).IsUnique();
+            entity.Property(x => x.Name).HasMaxLength(160);
+            entity.Property(x => x.Email).HasMaxLength(160);
+            entity.Property(x => x.PasswordHash).HasMaxLength(400);
         });
 
         modelBuilder.Entity<SurveyQuestion>(entity =>

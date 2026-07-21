@@ -1,0 +1,30 @@
+﻿@page
+@model BestVipCustomLab.Web.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Entrar";
+}
+
+<section class="container auth-page">
+    <form method="post" class="surface-card stack-md">
+        <span class="eyebrow">Acesso do participante</span>
+        <h1>Entre com seu cadastro</h1>
+        <p>Se você já criou seu perfil, use o mesmo email e senha para participar de qualquer nova pesquisa sem precisar se cadastrar novamente.</p>
+
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <label>
+            <span>Email</span>
+            <input asp-for="Input.Email" type="email" autocomplete="email" />
+        </label>
+        <label>
+            <span>Senha</span>
+            <input asp-for="Input.Password" type="password" autocomplete="current-password" />
+        </label>
+        <input asp-for="Input.ReturnUrl" type="hidden" />
+        <button class="button button-primary" type="submit">Entrar e continuar</button>
+        <p class="muted-inline">Ainda não tem acesso? <a href="/Register?ReturnUrl=@Model.ReturnUrl">Criar meu cadastro</a>.</p>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -13,7 +13,14 @@ public interface ICampaignExperienceService
 public interface IVisitorService
 {
     Task<RegistrationResultDto> RegisterVisitorAsync(VisitorRegistrationRequest request, CancellationToken cancellationToken = default);
+    Task<VisitorLoginResultDto> AuthenticateAsync(VisitorLoginRequest request, CancellationToken cancellationToken = default);
+    Task<VisitorLoginResultDto?> GetVisitorLoginAsync(Guid visitorId, string returnUrl, CancellationToken cancellationToken = default);
     Task JoinVipListAsync(VipInterestRequest request, CancellationToken cancellationToken = default);
+}
+
+public interface IAdminAuthService
+{
+    Task<AdminLoginResultDto> AuthenticateAsync(AdminLoginRequest request, CancellationToken cancellationToken = default);
 }
 
 public interface ISurveyService

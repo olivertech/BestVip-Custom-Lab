@@ -1,4 +1,4 @@
-@using BestVipCustomLab.Web.Infrastructure
+﻿@using BestVipCustomLab.Web.Infrastructure
 @inject CampaignContextAccessor CampaignContext
 @{
     var campaign = CampaignContext.ActiveCampaign;
@@ -52,6 +52,7 @@
             <nav class="nav-links">
                 <a href="/">Campanha Atual</a>
                 <a href="/Register">Cadastro</a>
+                <a href="/Account/Login">Entrar</a>
                 <a href="/Survey">Pesquisa</a>
                 <a href="/Vip">Lista VIP</a>
                 <a href="/About">Sobre</a>

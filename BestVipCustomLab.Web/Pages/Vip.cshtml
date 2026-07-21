@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model BestVipCustomLab.Web.Pages.VipModel
 @{
     ViewData["Title"] = "Lista VIP";
@@ -11,25 +11,15 @@
         <p>Entre na lista da campanha vigente para receber avisos de lançamento, mockups e possíveis pré-vendas.</p>
     </div>
 
-    @if (Model.Input.VisitorId == Guid.Empty)
-    {
-        <div class="surface-card stack-md">
-            <p>Para entrar na Lista VIP, primeiro conclua o cadastro base do visitante.</p>
-            <a class="button button-primary" href="/Register?Input.ReturnUrl=/Vip">Quero me cadastrar</a>
-        </div>
-    }
-    else
-    {
-        <form method="post" class="surface-card stack-md">
-            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-            <input asp-for="Input.CampaignId" type="hidden" />
-            <input asp-for="Input.VisitorId" type="hidden" />
-            <label><span>O que mais te interessa nesta campanha?</span><textarea asp-for="Input.Notes" rows="5"></textarea></label>
-            <button class="button button-primary" type="submit">Entrar na Lista VIP</button>
-            @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
-            {
-                <p class="success-badge">@Model.SuccessMessage</p>
-            }
-        </form>
-    }
+    <form method="post" class="surface-card stack-md">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <input asp-for="Input.CampaignId" type="hidden" />
+        <input asp-for="Input.VisitorId" type="hidden" />
+        <label><span>O que mais te interessa nesta campanha?</span><textarea asp-for="Input.Notes" rows="5"></textarea></label>
+        <button class="button button-primary" type="submit">Entrar na Lista VIP</button>
+        @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+        {
+            <p class="success-badge">@Model.SuccessMessage</p>
+        }
+    </form>
 </section>

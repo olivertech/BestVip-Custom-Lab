@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model BestVipCustomLab.Web.Pages.RegisterModel
 @{
     ViewData["Title"] = "Cadastro";
@@ -7,16 +7,24 @@
 <section class="container form-layout">
     <div class="surface-card stack-md">
         <span class="eyebrow">Cadastro obrigatório</span>
-        <h1>Antes da pesquisa, queremos conhecer você.</h1>
-        <p>Esses dados alimentam a inteligência de mercado da BestVip e viabilizam campanhas futuras com segmentação real.</p>
+        <h1>Crie seu acesso para participar das pesquisas da BestVip.</h1>
+        <p>Seu cadastro será reutilizado nas próximas campanhas. Assim, você entra uma vez e depois pode voltar para responder novas pesquisas sem gerar cadastros duplicados.</p>
     </div>
 
     <form method="post" class="surface-card stack-md">
         <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+        <div class="auth-highlight stack-sm">
+            <span class="eyebrow">Acesso futuro</span>
+            <h2>Email e senha serão seu login</h2>
+            <p>Guarde bem esses dados: eles serão usados para acessar a plataforma no futuro, participar de novas pesquisas e acompanhar campanhas futuras.</p>
+        </div>
+
         <div class="field-grid">
             <label><span>Nome</span><input asp-for="Input.FirstName" /></label>
             <label><span>Sobrenome</span><input asp-for="Input.LastName" /></label>
-            <label><span>Email</span><input asp-for="Input.Email" /></label>
+            <label class="field-emphasis"><span>Email de acesso</span><input asp-for="Input.Email" type="email" autocomplete="email" /></label>
+            <label class="field-emphasis"><span>Senha de acesso</span><input asp-for="Input.Password" type="password" autocomplete="new-password" placeholder="Use 1 maiúscula, 1 número e 1 símbolo" /></label>
             <label><span>WhatsApp</span><input asp-for="Input.WhatsApp" data-mask="whatsapp" inputmode="numeric" maxlength="15" placeholder="(11) 99999-9999" /></label>
             <label><span>Cidade</span><input asp-for="Input.City" /></label>
             <label><span>Estado</span><input asp-for="Input.State" /></label>
@@ -33,11 +41,19 @@
                     }
                 </select>
             </label>
+            <label class="field-span-2">
+                <span>Quais são seus interesses em produtos personalizados?</span>
+                <textarea asp-for="Input.Interests" rows="5" placeholder="Conte o que você procura, estilos que mais gosta, temas favoritos e o tipo de produto que mais chamaria sua atenção."></textarea>
+            </label>
         </div>
+
         <input asp-for="Input.ReturnUrl" type="hidden" />
+
         <label class="checkbox"><input asp-for="Input.AcceptPrivacyPolicy" /> Aceito a <a href="/Privacy" target="_blank" rel="noopener">política de privacidade</a> e o armazenamento dos meus dados.</label>
         <label class="checkbox"><input asp-for="Input.AcceptMarketing" /> Aceito receber novidades e lançamentos da BestVip.</label>
+
         <button class="button button-primary" type="submit">Continuar para a pesquisa</button>
+        <p class="muted-inline">Já tem cadastro? <a href="/Account/Login?ReturnUrl=@Model.ReturnUrl">Entrar com meu email e senha</a>.</p>
     </form>
 </section>
 

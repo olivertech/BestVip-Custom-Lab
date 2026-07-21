@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace BestVipCustomLab.Application;
 
@@ -9,12 +9,37 @@ public sealed class VisitorRegistrationRequestValidator : AbstractValidator<Visi
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(80);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(80);
         RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(160);
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .MinimumLength(8)
+            .Matches("[A-Z]").WithMessage("A senha deve conter pelo menos 1 letra maiúscula.")
+            .Matches("[0-9]").WithMessage("A senha deve conter pelo menos 1 número.")
+            .Matches("[^a-zA-Z0-9]").WithMessage("A senha deve conter pelo menos 1 símbolo.");
         RuleFor(x => x.WhatsApp).NotEmpty().MaximumLength(30);
         RuleFor(x => x.City).NotEmpty().MaximumLength(80);
         RuleFor(x => x.State).NotEmpty().MaximumLength(40);
+        RuleFor(x => x.Interests).NotEmpty().MaximumLength(1200);
         RuleFor(x => x.AcceptPrivacyPolicy).Equal(true);
         RuleFor(x => x).Must(x => x.BirthDate is not null || !string.IsNullOrWhiteSpace(x.AgeRange))
-            .WithMessage("Informe data de nascimento ou faixa etaria.");
+            .WithMessage("Informe data de nascimento ou faixa etária.");
+    }
+}
+
+public sealed class VisitorLoginRequestValidator : AbstractValidator<VisitorLoginRequest>
+{
+    public VisitorLoginRequestValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(160);
+        RuleFor(x => x.Password).NotEmpty();
+    }
+}
+
+public sealed class AdminLoginRequestValidator : AbstractValidator<AdminLoginRequest>
+{
+    public AdminLoginRequestValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(160);
+        RuleFor(x => x.Password).NotEmpty();
     }
 }
 

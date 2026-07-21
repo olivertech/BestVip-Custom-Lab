@@ -1,19 +1,19 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using BestVipCustomLab.Application;
 using BestVipCustomLab.Web.Infrastructure;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Options;
 
 namespace BestVipCustomLab.Web.Pages.Admin;
 
 [AllowAnonymous]
-public sealed class LoginModel(IOptions<AdminAuthOptions> options) : PageModel
+public sealed class LoginModel(IAdminAuthService adminAuthService) : PageModel
 {
     [BindProperty]
-    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
 
     [BindProperty]
     public string Password { get; set; } = string.Empty;
@@ -22,16 +22,29 @@ public sealed class LoginModel(IOptions<AdminAuthOptions> options) : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        if (!string.Equals(Username, options.Value.Username, StringComparison.Ordinal) ||
-            !string.Equals(Password, options.Value.Password, StringComparison.Ordinal))
+        try
         {
-            ErrorMessage = "Credenciais invalidas.";
+            var result = await adminAuthService.AuthenticateAsync(new AdminLoginRequest
+            {
+                Email = Email,
+                Password = Password
+            }, HttpContext.RequestAborted);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, result.AdminUserId.ToString()),
+                new Claim(ClaimTypes.Name, result.Name),
+                new Claim(ClaimTypes.Email, result.Email)
+            };
+
+            var identity = new ClaimsIdentity(claims, AuthSchemes.AdminScheme);
+            await HttpContext.SignInAsync(AuthSchemes.AdminScheme, new ClaimsPrincipal(identity));
+            return RedirectToPage("/Admin/Index");
+        }
+        catch (ValidationException exception)
+        {
+            ErrorMessage = exception.Message;
             return Page();
         }
-
-        var claims = new[] { new Claim(ClaimTypes.Name, Username) };
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-        return RedirectToPage("/Admin/Index");
     }
 }

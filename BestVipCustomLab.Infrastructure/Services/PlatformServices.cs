@@ -1,6 +1,7 @@
 using BestVipCustomLab.Application;
 using BestVipCustomLab.Domain;
 using BestVipCustomLab.Infrastructure.Persistence;
+using BestVipCustomLab.Infrastructure.Security;
 using Dapper;
 using FluentValidation;
 using Mapster;
@@ -252,7 +253,8 @@ internal sealed class CampaignExperienceService(
 
 internal sealed class VisitorService(
     AppDbContext dbContext,
-    IValidator<VisitorRegistrationRequest> validator) : IVisitorService
+    IValidator<VisitorRegistrationRequest> validator,
+    IValidator<VisitorLoginRequest> loginValidator) : IVisitorService
 {
     public async Task<RegistrationResultDto> RegisterVisitorAsync(VisitorRegistrationRequest request, CancellationToken cancellationToken = default)
     {
@@ -261,11 +263,12 @@ internal sealed class VisitorService(
         var email = request.Email.Trim().ToLowerInvariant();
         if (await dbContext.Visitors.AnyAsync(x => x.Email == email, cancellationToken))
         {
-            throw new ValidationException("Ja existe um cadastro com este email.");
+            throw new ValidationException("Já existe um cadastro com este email.");
         }
 
         var visitor = request.Adapt<Visitor>();
         visitor.Email = email;
+        visitor.PasswordHash = PasswordHasher.Hash(request.Password);
         visitor.AllowMarketing = request.AcceptMarketing;
 
         visitor.ConsentRecords.Add(new ConsentRecord
@@ -279,8 +282,48 @@ internal sealed class VisitorService(
         dbContext.Visitors.Add(visitor);
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        var redirectUrl = $"{request.ReturnUrl}?visitorId={visitor.Id}";
-        return new RegistrationResultDto(visitor.Id, redirectUrl);
+        var redirectUrl = string.IsNullOrWhiteSpace(request.ReturnUrl) ? "/Survey" : request.ReturnUrl;
+        return new RegistrationResultDto(visitor.Id, redirectUrl, visitor.Email);
+    }
+
+    public async Task<VisitorLoginResultDto> AuthenticateAsync(VisitorLoginRequest request, CancellationToken cancellationToken = default)
+    {
+        await loginValidator.ValidateAndThrowAsync(request, cancellationToken);
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var visitor = await dbContext.Visitors.FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
+
+        var verificationResult = visitor is null
+            ? PasswordVerificationResult.Failed
+            : PasswordHasher.Verify(request.Password, visitor.PasswordHash);
+
+        if (visitor is null || verificationResult == PasswordVerificationResult.Failed)
+        {
+            throw new ValidationException("Email ou senha inválidos.");
+        }
+
+        if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+        {
+            visitor.PasswordHash = PasswordHasher.Hash(request.Password);
+        }
+
+        visitor.LastLoginAtUtc = DateTimeOffset.UtcNow;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        var redirectUrl = string.IsNullOrWhiteSpace(request.ReturnUrl) ? "/Survey" : request.ReturnUrl;
+        return new VisitorLoginResultDto(visitor.Id, visitor.Email, $"{visitor.FirstName} {visitor.LastName}".Trim(), redirectUrl);
+    }
+
+    public async Task<VisitorLoginResultDto?> GetVisitorLoginAsync(Guid visitorId, string returnUrl, CancellationToken cancellationToken = default)
+    {
+        var visitor = await dbContext.Visitors.FirstOrDefaultAsync(x => x.Id == visitorId, cancellationToken);
+        if (visitor is null)
+        {
+            return null;
+        }
+
+        var redirectUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/Survey" : returnUrl;
+        return new VisitorLoginResultDto(visitor.Id, visitor.Email, $"{visitor.FirstName} {visitor.LastName}".Trim(), redirectUrl);
     }
 
     public async Task JoinVipListAsync(VipInterestRequest request, CancellationToken cancellationToken = default)
@@ -302,6 +345,38 @@ internal sealed class VisitorService(
         });
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+}
+
+internal sealed class AdminAuthService(
+    AppDbContext dbContext,
+    IValidator<AdminLoginRequest> validator) : IAdminAuthService
+{
+    public async Task<AdminLoginResultDto> AuthenticateAsync(AdminLoginRequest request, CancellationToken cancellationToken = default)
+    {
+        await validator.ValidateAndThrowAsync(request, cancellationToken);
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var adminUser = await dbContext.AdminUsers.FirstOrDefaultAsync(x => x.Email == email && x.IsActive, cancellationToken);
+
+        var verificationResult = adminUser is null
+            ? PasswordVerificationResult.Failed
+            : PasswordHasher.Verify(request.Password, adminUser.PasswordHash);
+
+        if (adminUser is null || verificationResult == PasswordVerificationResult.Failed)
+        {
+            throw new ValidationException("Email ou senha inválidos.");
+        }
+
+        if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+        {
+            adminUser.PasswordHash = PasswordHasher.Hash(request.Password);
+        }
+
+        adminUser.LastLoginAtUtc = DateTimeOffset.UtcNow;
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return new AdminLoginResultDto(adminUser.Id, adminUser.Email, adminUser.Name);
     }
 }
 
@@ -399,7 +474,7 @@ internal sealed class SurveyService(
         var visitorExists = await dbContext.Visitors.AnyAsync(x => x.Id == request.VisitorId, cancellationToken);
         if (!visitorExists)
         {
-            throw new ValidationException("Visitante nao encontrado.");
+            throw new ValidationException("Visitante não encontrado.");
         }
 
         var response = new SurveyResponse
@@ -527,7 +602,7 @@ internal sealed class DashboardService(AppDbContext dbContext) : IDashboardServi
     {
         return await dbContext.Visitors
             .GroupJoin(dbContext.TrafficSources, visitor => visitor.TrafficSourceId, source => source.Id, (visitor, sources) => new { visitor, source = sources.FirstOrDefault() })
-            .GroupBy(x => x.source != null ? x.source.Name : "Nao informado")
+            .GroupBy(x => x.source != null ? x.source.Name : "Não informado")
             .Select(group => new TrafficSourceStatDto(group.Key, group.Count()))
             .OrderByDescending(x => x.Count)
             .ToListAsync(cancellationToken);

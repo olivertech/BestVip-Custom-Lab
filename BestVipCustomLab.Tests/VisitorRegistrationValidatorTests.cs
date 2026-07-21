@@ -36,10 +36,12 @@ public sealed class VisitorRegistrationValidatorTests
         FirstName = "Marcelo",
         LastName = "Oliveira",
         Email = "marcelo@example.com",
+        Password = "BestVip@123",
         WhatsApp = "5511999999999",
         City = "Sao Paulo",
         State = "SP",
         BirthDate = new DateOnly(1990, 5, 10),
+        Interests = "Produtos geek premium e itens personalizados com acabamento diferenciado.",
         AcceptPrivacyPolicy = true,
         AcceptMarketing = true
     };

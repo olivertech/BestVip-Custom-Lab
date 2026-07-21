@@ -1,11 +1,14 @@
+﻿using System.Security.Claims;
 using BestVipCustomLab.Application;
 using BestVipCustomLab.Web.Infrastructure;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BestVipCustomLab.Web.Pages;
 
+[Authorize(Policy = AuthSchemes.UserPolicy)]
 public sealed class VipModel(
     CampaignContextAccessor campaignContextAccessor,
     IVisitorService visitorService) : PageModel
@@ -13,20 +16,25 @@ public sealed class VipModel(
     [BindProperty]
     public VipInterestRequest Input { get; set; } = new();
 
-    [BindProperty(SupportsGet = true)]
-    public Guid VisitorId { get; set; }
-
     public ActiveCampaignDto? Campaign { get; private set; }
     public string? SuccessMessage { get; private set; }
 
-    public void OnGet()
+    public IActionResult OnGet()
     {
         Campaign = campaignContextAccessor.ActiveCampaign;
+        var visitorId = TryGetVisitorId();
+        if (visitorId is null)
+        {
+            return RedirectToPage("/Account/Login", new { ReturnUrl = "/Vip" });
+        }
+
         if (Campaign is not null)
         {
             Input.CampaignId = Campaign.Id;
-            Input.VisitorId = VisitorId;
+            Input.VisitorId = visitorId.Value;
         }
+
+        return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -36,6 +44,15 @@ public sealed class VipModel(
         {
             return Page();
         }
+
+        var visitorId = TryGetVisitorId();
+        if (visitorId is null)
+        {
+            return RedirectToPage("/Account/Login", new { ReturnUrl = "/Vip" });
+        }
+
+        Input.VisitorId = visitorId.Value;
+        Input.CampaignId = Campaign.Id;
 
         try
         {
@@ -48,5 +65,11 @@ public sealed class VipModel(
         }
 
         return Page();
+    }
+
+    private Guid? TryGetVisitorId()
+    {
+        var rawValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(rawValue, out var visitorId) ? visitorId : null;
     }
 }

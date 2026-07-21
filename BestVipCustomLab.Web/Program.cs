@@ -1,8 +1,6 @@
-using System.Security.Claims;
 using BestVipCustomLab.Application;
 using BestVipCustomLab.Infrastructure;
 using BestVipCustomLab.Web.Infrastructure;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 
@@ -10,23 +8,42 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((_, _, configuration) => configuration.AddBestVipSerilog());
 
-builder.Services.Configure<AdminAuthOptions>(builder.Configuration.GetSection(AdminAuthOptions.SectionName));
 builder.Services.AddScoped<CampaignContextAccessor>();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddRazorPages(options =>
 {
-    options.Conventions.AuthorizeFolder("/Admin");
+    options.Conventions.AuthorizeFolder("/Admin", AuthSchemes.AdminPolicy);
     options.Conventions.AllowAnonymousToPage("/Admin/Login");
+    options.Conventions.AllowAnonymousToPage("/Account/Login");
 });
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication()
+    .AddCookie(AuthSchemes.UserScheme, options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/Login";
+        options.Cookie.Name = "bestvip.user";
+    })
+    .AddCookie(AuthSchemes.AdminScheme, options =>
     {
         options.LoginPath = "/Admin/Login";
         options.AccessDeniedPath = "/Admin/Login";
+        options.Cookie.Name = "bestvip.admin";
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuthSchemes.UserPolicy, policy =>
+    {
+        policy.AddAuthenticationSchemes(AuthSchemes.UserScheme);
+        policy.RequireAuthenticatedUser();
+    });
+    options.AddPolicy(AuthSchemes.AdminPolicy, policy =>
+    {
+        policy.AddAuthenticationSchemes(AuthSchemes.AdminScheme);
+        policy.RequireAuthenticatedUser();
+    });
+});
 
 var app = builder.Build();
 

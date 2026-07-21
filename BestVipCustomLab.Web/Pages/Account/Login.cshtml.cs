@@ -1,47 +1,46 @@
 ﻿using System.Security.Claims;
 using BestVipCustomLab.Application;
-using BestVipCustomLab.Infrastructure.Persistence;
 using BestVipCustomLab.Web.Infrastructure;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
-namespace BestVipCustomLab.Web.Pages;
+namespace BestVipCustomLab.Web.Pages.Account;
 
-public sealed class RegisterModel(
-    IVisitorService visitorService,
-    AppDbContext dbContext) : PageModel
+[AllowAnonymous]
+public sealed class LoginModel(IVisitorService visitorService) : PageModel
 {
     [BindProperty(SupportsGet = true)]
     public string ReturnUrl { get; set; } = "/Survey";
 
     [BindProperty]
-    public VisitorRegistrationRequest Input { get; set; } = new();
-
-    public IReadOnlyList<SelectOption> TrafficSources { get; private set; } = [];
+    public VisitorLoginRequest Input { get; set; } = new();
 
     public async Task<IActionResult> OnGetAsync()
     {
-        if (User.Identity?.IsAuthenticated == true)
+        if (User.Identity?.IsAuthenticated == true &&
+            Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var visitorId))
         {
-            return LocalRedirect(string.IsNullOrWhiteSpace(ReturnUrl) ? "/Survey" : ReturnUrl);
+            var currentLogin = await visitorService.GetVisitorLoginAsync(visitorId, ReturnUrl, HttpContext.RequestAborted);
+            if (currentLogin is not null)
+            {
+                return LocalRedirect(currentLogin.RedirectUrl);
+            }
         }
 
         Input.ReturnUrl = ReturnUrl;
-        await LoadSourcesAsync();
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
-        await LoadSourcesAsync();
         Input.ReturnUrl = string.IsNullOrWhiteSpace(ReturnUrl) ? Input.ReturnUrl : ReturnUrl;
 
         try
         {
-            var result = await visitorService.RegisterVisitorAsync(Input, HttpContext.RequestAborted);
+            var result = await visitorService.AuthenticateAsync(Input, HttpContext.RequestAborted);
             await SignInAsync(result);
             return LocalRedirect(result.RedirectUrl);
         }
@@ -52,26 +51,16 @@ public sealed class RegisterModel(
         }
     }
 
-    private async Task LoadSourcesAsync()
-    {
-        TrafficSources = await dbContext.TrafficSources
-            .OrderBy(x => x.Name)
-            .Select(x => new SelectOption(x.Id, x.Name))
-            .ToListAsync(HttpContext.RequestAborted);
-    }
-
-    private async Task SignInAsync(RegistrationResultDto result)
+    private async Task SignInAsync(VisitorLoginResultDto result)
     {
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, result.VisitorId.ToString()),
             new Claim(ClaimTypes.Email, result.Email),
-            new Claim(ClaimTypes.Name, Input.FirstName)
+            new Claim(ClaimTypes.Name, result.FullName)
         };
 
         var identity = new ClaimsIdentity(claims, AuthSchemes.UserScheme);
         await HttpContext.SignInAsync(AuthSchemes.UserScheme, new ClaimsPrincipal(identity));
     }
-
-    public sealed record SelectOption(Guid Id, string Label);
 }

@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model BestVipCustomLab.Web.Pages.SurveyModel
 @{
     ViewData["Title"] = "Pesquisa";
@@ -9,14 +9,6 @@
 {
     <section class="container surface-card stack-lg">
         <h1>Sem campanha ativa.</h1>
-    </section>
-}
-else if (Model.VisitorId == Guid.Empty && Model.Input.VisitorId == Guid.Empty)
-{
-    <section class="container surface-card stack-lg">
-        <span class="eyebrow">Cadastro necessario</span>
-        <h1>Você precisa se cadastrar antes de responder.</h1>
-        <a class="button button-primary" href="/Register?Input.ReturnUrl=/Survey">Ir para o cadastro</a>
     </section>
 }
 else
@@ -32,7 +24,7 @@ else
             }
         </div>
 
-        <form method="post" class="surface-card stack-md">
+        <form method="post" class="surface-card survey-form stack-lg">
             <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
             <input asp-for="Input.VisitorId" type="hidden" />
 
@@ -40,25 +32,35 @@ else
             {
                 var question = campaign.Questions[index];
                 <input name="Input.Answers[@index].QuestionId" type="hidden" value="@question.Id" />
-                <div class="question-block">
-                    <h3>@question.Prompt</h3>
-                    <p>@question.HelpText</p>
+                <section class="survey-question">
+                    <div class="stack-sm">
+                        <h3>@question.Prompt</h3>
+                        <p>@question.HelpText</p>
+                    </div>
 
                     @if (question.Type == BestVipCustomLab.Domain.SurveyQuestionType.Text)
                     {
-                        <textarea name="Input.Answers[@index].Value" rows="4"></textarea>
+                        <textarea class="survey-textarea" name="Input.Answers[@index].Value" rows="5" placeholder="Escreva sua resposta com liberdade."></textarea>
                     }
                     else
                     {
-                        @foreach (var option in question.Options)
-                        {
-                            <label class="option-chip">
-                                <input type="radio" name="Input.Answers[@index].Value" value="@option.Label" />
-                                <span>@option.Label</span>
-                            </label>
-                        }
+                        <div class="option-grid">
+                            @foreach (var option in question.Options)
+                            {
+                                <label class="choice-card">
+                                    <input
+                                        type="radio"
+                                        name="Input.Answers[@index].Value"
+                                        value="@option.Label" />
+                                    <span class="choice-card-body">
+                                        <span class="choice-indicator"></span>
+                                        <span class="choice-label">@option.Label</span>
+                                    </span>
+                                </label>
+                            }
+                        </div>
                     }
-                </div>
+                </section>
             }
 
             <button class="button button-primary" type="submit">Enviar pesquisa</button>
