@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="BestVipCustomLab.Application/BestVipCustomLab.Application.csproj" />
+  <Project Path="BestVipCustomLab.Domain/BestVipCustomLab.Domain.csproj" />
+  <Project Path="BestVipCustomLab.Infrastructure/BestVipCustomLab.Infrastructure.csproj" />
+  <Project Path="BestVipCustomLab.Tests/BestVipCustomLab.Tests.csproj" />
+  <Project Path="BestVipCustomLab.Web/BestVipCustomLab.Web.csproj" />
+</Solution>

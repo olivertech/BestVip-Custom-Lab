@@ -1,0 +1,104 @@
+@page
+@model BestVipCustomLab.Web.Pages.IndexModel
+@{
+    ViewData["Title"] = "Campanha Atual";
+    var campaign = Model.Campaign;
+    var heroImage = campaign?.Assets.FirstOrDefault(x => x.AssetType == "hero")?.Url;
+    var primaryCta = campaign?.Contents.FirstOrDefault(x => x.Key == "primary-cta")?.Value ?? "Participar";
+    var secondaryCta = campaign?.Contents.FirstOrDefault(x => x.Key == "secondary-cta")?.Value ?? "Lista VIP";
+    var storyTitle = campaign?.Contents.FirstOrDefault(x => x.Key == "story-title")?.Value;
+    var storyBody = campaign?.Contents.FirstOrDefault(x => x.Key == "story-body")?.Value;
+}
+
+@if (campaign is null)
+{
+    <section class="container surface-card stack-lg">
+        <h1>Nenhuma campanha ativa no momento.</h1>
+        <p>A estrutura ja esta pronta. Ative uma campanha no painel administrativo para publicar o site tematico.</p>
+    </section>
+}
+else
+{
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="stack-lg">
+                <span class="eyebrow">@campaign.HeroBannerLabel</span>
+                <h1>@campaign.Headline</h1>
+                <p class="lead">@campaign.Subheadline</p>
+                <div class="button-row">
+                    <a class="button button-primary" href="/Register">@primaryCta</a>
+                    <a class="button button-secondary" href="/Vip">@secondaryCta</a>
+                </div>
+                <p class="hero-copy">@campaign.Description</p>
+            </div>
+            <div class="hero-visual">
+                <img src="@heroImage" alt="@campaign.Name" />
+            </div>
+        </div>
+    </section>
+
+    <section class="container story-grid">
+        <article class="surface-card stack-md">
+            <span class="eyebrow">Posicionamento</span>
+            <h2>@storyTitle</h2>
+            <p>@storyBody</p>
+        </article>
+        <article class="surface-card stack-md">
+            <span class="eyebrow">Estrutura dinamica</span>
+            <ul class="clean-list">
+                <li>Banner, cores, textos e chamadas trocam com a campanha vigente.</li>
+                <li>Produtos e pesquisa seguem o mesmo motor de configuracao.</li>
+                <li>Dia dos Pais e Natal ja podem assumir a plataforma sem refatorar a base.</li>
+            </ul>
+        </article>
+    </section>
+
+    <section class="container stack-lg">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Produtos em desenvolvimento</span>
+                <h2>Vitrine da campanha @campaign.Name</h2>
+            </div>
+            <a class="button button-secondary" href="/Survey">Responder pesquisa</a>
+        </div>
+        <div class="card-grid">
+            @foreach (var product in campaign.Products)
+            {
+                <article class="surface-card product-card">
+                    <img src="@product.MockupUrl" alt="@product.Name" />
+                    <div class="stack-sm">
+                        <h3>@product.Name</h3>
+                        <p>@product.Description</p>
+                        <strong>@product.PriceLabel</strong>
+                        <div class="meter">
+                            <span style="width:@product.InterestScore%"></span>
+                        </div>
+                        <small>Interesse estimado: @product.InterestScore%</small>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+
+    @if (campaign.ShowPartialResults && campaign.PartialResults.Any())
+    {
+        <section class="container stack-lg">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">Resultados parciais</span>
+                    <h2>Leituras iniciais da campanha</h2>
+                </div>
+            </div>
+            <div class="card-grid">
+                @foreach (var result in campaign.PartialResults)
+                {
+                    <article class="surface-card stack-sm">
+                        <h3>@result.Question</h3>
+                        <p class="result-highlight">@result.TopAnswer</p>
+                        <small>@result.Votes votos registrados</small>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+}

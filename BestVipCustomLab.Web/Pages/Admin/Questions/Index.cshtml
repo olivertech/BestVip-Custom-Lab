@@ -1,0 +1,24 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.Questions.IndexModel
+@{
+    ViewData["Title"] = "Perguntas";
+}
+
+<section class="container stack-lg">
+    <div class="section-heading">
+        <h1>Perguntas da campanha</h1>
+        <a class="button button-primary" href="/Admin/Questions/Edit?campaignId=@Model.CampaignId">Nova pergunta</a>
+    </div>
+
+    <div class="card-grid">
+        @foreach (var question in Model.Questions)
+        {
+            <article class="surface-card stack-sm">
+                <h2>@question.Prompt</h2>
+                <p>@question.Type</p>
+                <small>@question.OptionsText.Replace(Environment.NewLine, " | ")</small>
+                <a class="button button-secondary" href="/Admin/Questions/Edit?id=@question.Id&campaignId=@Model.CampaignId">Editar</a>
+            </article>
+        }
+    </div>
+</section>

@@ -1,0 +1,54 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="container stack-lg">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Admin</span>
+            <h1>Dashboard operativo</h1>
+        </div>
+        <div class="button-row">
+            <a class="button button-secondary" href="/Admin/Campaigns/Index">Campanhas</a>
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <article class="surface-card stack-sm"><span class="eyebrow">Visitantes</span><h2>@Model.Summary.TotalVisitors</h2><p>+@Model.Summary.NewVisitorsLast7Days nos ultimos 7 dias</p></article>
+        <article class="surface-card stack-sm"><span class="eyebrow">Respostas</span><h2>@Model.Summary.SurveyResponses</h2><p>Pesquisas enviadas</p></article>
+        <article class="surface-card stack-sm"><span class="eyebrow">Lista VIP</span><h2>@Model.Summary.VipSubscriptions</h2><p>Interesses segmentados</p></article>
+        <article class="surface-card stack-sm"><span class="eyebrow">Opt-in</span><h2>@Model.Summary.MarketingOptInRate%</h2><p>@Model.Summary.ActiveCampaignName ativa</p></article>
+    </div>
+
+    <div class="admin-grid">
+        <article class="surface-card stack-md">
+            <h2>Campanhas</h2>
+            <ul class="clean-list">
+                @foreach (var campaign in Model.Campaigns)
+                {
+                    <li><strong>@campaign.Name</strong> - @campaign.Status @(campaign.IsActive ? "(ativa)" : string.Empty)</li>
+                }
+            </ul>
+        </article>
+        <article class="surface-card stack-md">
+            <h2>Origem por estado</h2>
+            <ul class="clean-list">
+                @foreach (var item in Model.Geography)
+                {
+                    <li>@item.State - @item.Count</li>
+                }
+            </ul>
+        </article>
+        <article class="surface-card stack-md">
+            <h2>Fontes de trafego</h2>
+            <ul class="clean-list">
+                @foreach (var item in Model.Sources)
+                {
+                    <li>@item.Source - @item.Count</li>
+                }
+            </ul>
+        </article>
+    </div>
+</section>

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\BestVipCustomLab.Application\BestVipCustomLab.Application.csproj" />
+    <ProjectReference Include="..\BestVipCustomLab.Infrastructure\BestVipCustomLab.Infrastructure.csproj" />
+    <ProjectReference Include="..\BestVipCustomLab.Domain\BestVipCustomLab.Domain.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+</Project>

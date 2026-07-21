@@ -1,0 +1,71 @@
+@page
+@model BestVipCustomLab.Web.Pages.SurveyModel
+@{
+    ViewData["Title"] = "Pesquisa";
+    var campaign = Model.Campaign;
+}
+
+@if (campaign is null)
+{
+    <section class="container surface-card stack-lg">
+        <h1>Sem campanha ativa.</h1>
+    </section>
+}
+else if (Model.VisitorId == Guid.Empty && Model.Input.VisitorId == Guid.Empty)
+{
+    <section class="container surface-card stack-lg">
+        <span class="eyebrow">Cadastro necessario</span>
+        <h1>Voce precisa se cadastrar antes de responder.</h1>
+        <a class="button button-primary" href="/Register?Input.ReturnUrl=/Survey">Ir para o cadastro</a>
+    </section>
+}
+else
+{
+    <section class="container stack-lg">
+        <div class="surface-card stack-md">
+            <span class="eyebrow">Pesquisa da campanha</span>
+            <h1>@campaign.Name</h1>
+            <p>@campaign.Subheadline</p>
+            @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+            {
+                <p class="success-badge">@Model.SuccessMessage</p>
+            }
+        </div>
+
+        <form method="post" class="surface-card stack-md">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            <input asp-for="Input.VisitorId" type="hidden" />
+
+            @for (var index = 0; index < campaign.Questions.Count; index++)
+            {
+                var question = campaign.Questions[index];
+                <input name="Input.Answers[@index].QuestionId" type="hidden" value="@question.Id" />
+                <div class="question-block">
+                    <h3>@question.Prompt</h3>
+                    <p>@question.HelpText</p>
+
+                    @if (question.Type == BestVipCustomLab.Domain.SurveyQuestionType.Text)
+                    {
+                        <textarea name="Input.Answers[@index].Value" rows="4"></textarea>
+                    }
+                    else
+                    {
+                        @foreach (var option in question.Options)
+                        {
+                            <label class="option-chip">
+                                <input type="radio" name="Input.Answers[@index].Value" value="@option.Label" />
+                                <span>@option.Label</span>
+                            </label>
+                        }
+                    }
+                </div>
+            }
+
+            <button class="button button-primary" type="submit">Enviar pesquisa</button>
+        </form>
+    </section>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

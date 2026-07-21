@@ -1,0 +1,39 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.Campaigns.EditModel
+@{
+    ViewData["Title"] = "Editar Campanha";
+}
+
+<section class="container stack-lg">
+    <div class="surface-card stack-md">
+        <span class="eyebrow">Configuracao</span>
+        <h1>@(Model.Id is null ? "Nova campanha" : "Editar campanha")</h1>
+    </div>
+    <form method="post" class="surface-card stack-md">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <input asp-for="Input.Id" type="hidden" />
+        <div class="field-grid">
+            <label><span>Nome</span><input asp-for="Input.Name" /></label>
+            <label><span>Slug</span><input asp-for="Input.Slug" /></label>
+            <label><span>Headline</span><input asp-for="Input.Headline" /></label>
+            <label><span>Subheadline</span><input asp-for="Input.Subheadline" /></label>
+            <label><span>Faixa do banner</span><input asp-for="Input.HeroBannerLabel" /></label>
+            <label><span>Status</span><select asp-for="Input.Status" asp-items="Html.GetEnumSelectList<BestVipCustomLab.Domain.CampaignStatus>()"></select></label>
+            <label><span>Cor principal</span><input asp-for="Input.AccentColor" /></label>
+            <label><span>Cor secundaria</span><input asp-for="Input.AccentSecondaryColor" /></label>
+            <label><span>Fundo</span><input asp-for="Input.SurfaceColor" /></label>
+            <label><span>Gradiente inicio</span><input asp-for="Input.GradientStart" /></label>
+            <label><span>Gradiente fim</span><input asp-for="Input.GradientEnd" /></label>
+            <label><span>Texto</span><input asp-for="Input.TextColor" /></label>
+            <label><span>Texto suave</span><input asp-for="Input.MutedTextColor" /></label>
+            <label><span>CTA principal</span><input asp-for="Input.PrimaryCta" /></label>
+            <label><span>CTA secundario</span><input asp-for="Input.SecondaryCta" /></label>
+            <label><span>Titulo da historia</span><input asp-for="Input.StoryTitle" /></label>
+        </div>
+        <label><span>Descricao</span><textarea asp-for="Input.Description" rows="4"></textarea></label>
+        <label><span>Corpo da historia</span><textarea asp-for="Input.StoryBody" rows="5"></textarea></label>
+        <label class="checkbox"><input asp-for="Input.ShowPartialResults" /> Mostrar resultados parciais</label>
+        <label class="checkbox"><input asp-for="Input.IsActive" /> Definir como campanha ativa</label>
+        <button class="button button-primary" type="submit">Salvar campanha</button>
+    </form>
+</section>

@@ -1,0 +1,23 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.Products.IndexModel
+@{
+    ViewData["Title"] = "Produtos";
+}
+
+<section class="container stack-lg">
+    <div class="section-heading">
+        <h1>Produtos da campanha</h1>
+        <a class="button button-primary" href="/Admin/Products/Edit?campaignId=@Model.CampaignId">Novo produto</a>
+    </div>
+    <div class="card-grid">
+        @foreach (var product in Model.Products)
+        {
+            <article class="surface-card stack-sm">
+                <h2>@product.Name</h2>
+                <p>@product.PriceLabel</p>
+                <small>Interesse @product.InterestScore% | Ordem @product.DisplayOrder</small>
+                <a class="button button-secondary" href="/Admin/Products/Edit?id=@product.Id&campaignId=@Model.CampaignId">Editar</a>
+            </article>
+        }
+    </div>
+</section>

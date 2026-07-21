@@ -1,0 +1,21 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.Products.EditModel
+@{
+    ViewData["Title"] = "Editar Produto";
+}
+
+<section class="container stack-lg">
+    <form method="post" class="surface-card stack-md">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <input asp-for="Input.Id" type="hidden" />
+        <input asp-for="Input.CampaignId" type="hidden" />
+        <label><span>Nome</span><input asp-for="Input.Name" /></label>
+        <label><span>Descricao</span><textarea asp-for="Input.Description" rows="4"></textarea></label>
+        <label><span>Preco exibido</span><input asp-for="Input.PriceLabel" /></label>
+        <label><span>URL do mockup</span><input asp-for="Input.MockupUrl" /></label>
+        <label><span>CTA</span><input asp-for="Input.CtaLabel" /></label>
+        <label><span>Interesse (%)</span><input asp-for="Input.InterestScore" type="number" /></label>
+        <label><span>Ordem</span><input asp-for="Input.DisplayOrder" type="number" /></label>
+        <button class="button button-primary" type="submit">Salvar produto</button>
+    </form>
+</section>

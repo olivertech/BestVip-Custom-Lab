@@ -1,0 +1,23 @@
+@page
+@model BestVipCustomLab.Web.Pages.ContactModel
+@{
+    ViewData["Title"] = "Contato";
+}
+
+<section class="container form-layout">
+    <div class="surface-card stack-md">
+        <span class="eyebrow">Contato</span>
+        <h1>Fale com a BestVip sobre a campanha vigente.</h1>
+    </div>
+    <form method="post" class="surface-card stack-md">
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <label><span>Nome</span><input asp-for="Input.Name" /></label>
+        <label><span>Email</span><input asp-for="Input.Email" /></label>
+        <label><span>Mensagem</span><textarea asp-for="Input.Message" rows="6"></textarea></label>
+        <button class="button button-primary" type="submit">Enviar</button>
+        @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+        {
+            <p class="success-badge">@Model.SuccessMessage</p>
+        }
+    </form>
+</section>

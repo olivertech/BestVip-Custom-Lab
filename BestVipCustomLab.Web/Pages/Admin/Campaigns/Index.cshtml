@@ -1,0 +1,39 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.Campaigns.IndexModel
+@{
+    ViewData["Title"] = "Campanhas";
+}
+
+<section class="container stack-lg">
+    <div class="section-heading">
+        <div>
+            <span class="eyebrow">Admin</span>
+            <h1>Campanhas</h1>
+        </div>
+        <a class="button button-primary" href="/Admin/Campaigns/Edit">Nova campanha</a>
+    </div>
+
+    <div class="card-grid">
+        @foreach (var campaign in Model.Campaigns)
+        {
+            <article class="surface-card stack-md">
+                <div class="split-row">
+                    <div>
+                        <h2>@campaign.Name</h2>
+                        <p>@campaign.Slug</p>
+                    </div>
+                    <strong>@campaign.Status</strong>
+                </div>
+                <div class="button-row">
+                    <a class="button button-secondary" href="/Admin/Campaigns/Edit?id=@campaign.Id">Editar</a>
+                    <a class="button button-secondary" href="/Admin/Questions/Index?campaignId=@campaign.Id">Perguntas</a>
+                    <a class="button button-secondary" href="/Admin/Products/Index?campaignId=@campaign.Id">Produtos</a>
+                    <form method="post" asp-page-handler="Activate">
+                        <input type="hidden" name="id" value="@campaign.Id" />
+                        <button class="button button-primary" type="submit" @(campaign.IsActive ? "disabled" : null)>@(campaign.IsActive ? "Ativa" : "Ativar")</button>
+                    </form>
+                </div>
+            </article>
+        }
+    </div>
+</section>

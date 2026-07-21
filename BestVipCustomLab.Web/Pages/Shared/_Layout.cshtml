@@ -1,0 +1,71 @@
+@using BestVipCustomLab.Web.Infrastructure
+@inject CampaignContextAccessor CampaignContext
+@{
+    var campaign = CampaignContext.ActiveCampaign;
+    var primary = campaign?.Theme.AccentColor ?? "#c9a227";
+    var secondary = campaign?.Theme.AccentSecondaryColor ?? "#8d6f12";
+    var surface = campaign?.Theme.SurfaceColor ?? "#121212";
+    var gradientStart = campaign?.Theme.GradientStart ?? "#201507";
+    var gradientEnd = campaign?.Theme.GradientEnd ?? "#0d0d0d";
+    var text = campaign?.Theme.TextColor ?? "#f4efe2";
+    var muted = campaign?.Theme.MutedTextColor ?? "#b8b0a2";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BestVip Custom Lab</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        :root {
+            --brand-primary: @primary;
+            --brand-secondary: @secondary;
+            --brand-surface: @surface;
+            --brand-gradient-start: @gradientStart;
+            --brand-gradient-end: @gradientEnd;
+            --brand-text: @text;
+            --brand-muted: @muted;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-shell">
+            <a class="brand" href="/">
+                <span class="brand-mark">BV</span>
+                <span>
+                    <strong>BestVip</strong>
+                    <small>Custom Lab</small>
+                </span>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Campanha Atual</a>
+                <a href="/Register">Cadastro</a>
+                <a href="/Survey">Pesquisa</a>
+                <a href="/Vip">Lista VIP</a>
+                <a href="/About">Sobre</a>
+                <a href="/Contact">Contato</a>
+                <a href="/Admin">Admin</a>
+            </nav>
+        </div>
+    </header>
+    <main class="page-shell">
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <strong>BestVip Custom Lab</strong>
+                <p>Fonte proprietaria de inteligencia de mercado para campanhas sazonais e premium.</p>
+            </div>
+            <div>
+                <span class="eyebrow">Campanha ativa</span>
+                <p>@(campaign?.Name ?? "Nenhuma campanha ativa")</p>
+            </div>
+        </div>
+    </footer>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

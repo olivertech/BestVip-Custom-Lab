@@ -1,0 +1,26 @@
+@page
+@model BestVipCustomLab.Web.Pages.Admin.LoginModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="login-body">
+    <form method="post" class="login-card stack-md">
+        <h1>Painel BestVip</h1>
+        <label><span>Usuario</span><input asp-for="Username" /></label>
+        <label><span>Senha</span><input asp-for="Password" type="password" /></label>
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <p class="validation-summary">@Model.ErrorMessage</p>
+        }
+        <button class="button button-primary" type="submit">Entrar</button>
+    </form>
+</body>
+</html>
