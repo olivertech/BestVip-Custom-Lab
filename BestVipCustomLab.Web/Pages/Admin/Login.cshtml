@@ -13,8 +13,10 @@
 </head>
 <body class="login-body">
     <form method="post" class="login-card stack-md">
+        <span class="eyebrow">Acesso interno</span>
         <h1>Painel BestVip</h1>
-        <label><span>Usuario</span><input asp-for="Username" /></label>
+        <p>Entre com as credenciais administrativas para gerenciar campanhas, produtos e pesquisas.</p>
+        <label><span>Usuário</span><input asp-for="Username" /></label>
         <label><span>Senha</span><input asp-for="Password" type="password" /></label>
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {

@@ -6,9 +6,9 @@
 
 <section class="container form-layout">
     <div class="surface-card stack-md">
-        <span class="eyebrow">Cadastro obrigatorio</span>
-        <h1>Antes da pesquisa, queremos conhecer voce.</h1>
-        <p>Esses dados alimentam a inteligencia de mercado da BestVip e viabilizam campanhas futuras com segmentacao real.</p>
+        <span class="eyebrow">Cadastro obrigatório</span>
+        <h1>Antes da pesquisa, queremos conhecer você.</h1>
+        <p>Esses dados alimentam a inteligência de mercado da BestVip e viabilizam campanhas futuras com segmentação real.</p>
     </div>
 
     <form method="post" class="surface-card stack-md">
@@ -17,11 +17,11 @@
             <label><span>Nome</span><input asp-for="Input.FirstName" /></label>
             <label><span>Sobrenome</span><input asp-for="Input.LastName" /></label>
             <label><span>Email</span><input asp-for="Input.Email" /></label>
-            <label><span>WhatsApp</span><input asp-for="Input.WhatsApp" /></label>
+            <label><span>WhatsApp</span><input asp-for="Input.WhatsApp" data-mask="whatsapp" inputmode="numeric" maxlength="15" placeholder="(11) 99999-9999" /></label>
             <label><span>Cidade</span><input asp-for="Input.City" /></label>
             <label><span>Estado</span><input asp-for="Input.State" /></label>
             <label><span>Data de nascimento</span><input asp-for="Input.BirthDate" type="date" /></label>
-            <label><span>Faixa etaria</span><input asp-for="Input.AgeRange" placeholder="Opcional se informar a data" /></label>
+            <label><span>Faixa etária</span><input asp-for="Input.AgeRange" placeholder="Opcional se informar a data" /></label>
             <label><span>Instagram</span><input asp-for="Input.Instagram" /></label>
             <label>
                 <span>Como conheceu a BestVip</span>
@@ -35,8 +35,8 @@
             </label>
         </div>
         <input asp-for="Input.ReturnUrl" type="hidden" />
-        <label class="checkbox"><input asp-for="Input.AcceptPrivacyPolicy" /> Aceito a politica de privacidade e o armazenamento dos meus dados.</label>
-        <label class="checkbox"><input asp-for="Input.AcceptMarketing" /> Aceito receber novidades e lancamentos da BestVip.</label>
+        <label class="checkbox"><input asp-for="Input.AcceptPrivacyPolicy" /> Aceito a <a href="/Privacy" target="_blank" rel="noopener">política de privacidade</a> e o armazenamento dos meus dados.</label>
+        <label class="checkbox"><input asp-for="Input.AcceptMarketing" /> Aceito receber novidades e lançamentos da BestVip.</label>
         <button class="button button-primary" type="submit">Continuar para a pesquisa</button>
     </form>
 </section>

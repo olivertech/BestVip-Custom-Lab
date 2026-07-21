@@ -2,13 +2,13 @@
 @inject CampaignContextAccessor CampaignContext
 @{
     var campaign = CampaignContext.ActiveCampaign;
-    var primary = campaign?.Theme.AccentColor ?? "#c9a227";
-    var secondary = campaign?.Theme.AccentSecondaryColor ?? "#8d6f12";
-    var surface = campaign?.Theme.SurfaceColor ?? "#121212";
-    var gradientStart = campaign?.Theme.GradientStart ?? "#201507";
-    var gradientEnd = campaign?.Theme.GradientEnd ?? "#0d0d0d";
-    var text = campaign?.Theme.TextColor ?? "#f4efe2";
-    var muted = campaign?.Theme.MutedTextColor ?? "#b8b0a2";
+    var campaignPrimary = campaign?.Theme.AccentColor ?? "#14d7ff";
+    var campaignSecondary = campaign?.Theme.AccentSecondaryColor ?? "#ff47b9";
+    var surface = campaign?.Theme.SurfaceColor ?? "#141312";
+    var gradientStart = campaign?.Theme.GradientStart ?? "#181411";
+    var gradientEnd = campaign?.Theme.GradientEnd ?? "#080808";
+    var text = campaign?.Theme.TextColor ?? "#f5efe7";
+    var muted = campaign?.Theme.MutedTextColor ?? "#b6aa9b";
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -19,21 +19,31 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <style>
         :root {
-            --brand-primary: @primary;
-            --brand-secondary: @secondary;
+            --brand-gold: #d4af37;
+            --brand-gold-deep: #b9911d;
+            --brand-ink: #111111;
+            --brand-ink-soft: #1c1a18;
+            --brand-ivory: #f7f1e8;
+            --brand-sand: #d8c7af;
+            --campaign-primary: @campaignPrimary;
+            --campaign-secondary: @campaignSecondary;
             --brand-surface: @surface;
             --brand-gradient-start: @gradientStart;
             --brand-gradient-end: @gradientEnd;
             --brand-text: @text;
             --brand-muted: @muted;
+            --campaign-tertiary: #7c4dff;
+            --campaign-highlight: #00f5ff;
         }
     </style>
 </head>
-<body>
+<body data-campaign="@(campaign?.Slug ?? "default")">
     <header class="site-header">
         <div class="container nav-shell">
             <a class="brand" href="/">
-                <span class="brand-mark">BV</span>
+                <span class="brand-mark">
+                    <img src="~/images/bestvip-logo.jpg" alt="BestVip Personalizados" />
+                </span>
                 <span>
                     <strong>BestVip</strong>
                     <small>Custom Lab</small>
@@ -45,6 +55,7 @@
                 <a href="/Survey">Pesquisa</a>
                 <a href="/Vip">Lista VIP</a>
                 <a href="/About">Sobre</a>
+                <a href="/Privacy">Privacidade</a>
                 <a href="/Contact">Contato</a>
                 <a href="/Admin">Admin</a>
             </nav>
@@ -57,11 +68,15 @@
         <div class="container footer-grid">
             <div>
                 <strong>BestVip Custom Lab</strong>
-                <p>Fonte proprietaria de inteligencia de mercado para campanhas sazonais e premium.</p>
+                <p>Fonte proprietária de inteligência de mercado para campanhas sazonais e premium.</p>
             </div>
             <div>
                 <span class="eyebrow">Campanha ativa</span>
                 <p>@(campaign?.Name ?? "Nenhuma campanha ativa")</p>
+            </div>
+            <div>
+                <span class="eyebrow">Transparência</span>
+                <p><a href="/Privacy">Política de Privacidade</a></p>
             </div>
         </div>
     </footer>

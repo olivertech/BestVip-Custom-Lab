@@ -3,11 +3,8 @@
 @{
     ViewData["Title"] = "Campanha Atual";
     var campaign = Model.Campaign;
-    var heroImage = campaign?.Assets.FirstOrDefault(x => x.AssetType == "hero")?.Url;
     var primaryCta = campaign?.Contents.FirstOrDefault(x => x.Key == "primary-cta")?.Value ?? "Participar";
     var secondaryCta = campaign?.Contents.FirstOrDefault(x => x.Key == "secondary-cta")?.Value ?? "Lista VIP";
-    var storyTitle = campaign?.Contents.FirstOrDefault(x => x.Key == "story-title")?.Value;
-    var storyBody = campaign?.Contents.FirstOrDefault(x => x.Key == "story-body")?.Value;
 }
 
 @if (campaign is null)
@@ -31,29 +28,33 @@ else
                 </div>
                 <p class="hero-copy">@campaign.Description</p>
             </div>
-            <div class="hero-visual">
-                <img src="@heroImage" alt="@campaign.Name" />
+            <div class="hero-visual hero-stage">
+                <div class="hero-stage-panel hero-stage-main">
+                    <span class="eyebrow">Mood da campanha</span>
+                    <h2>Geek premium com energia anime</h2>
+                    <p>Base institucional em dourado e preto, com apoios neon inspirados em paletas de cultura gamer, cyberpunk e anime.</p>
+                </div>
+                <div class="hero-stage-panel hero-stage-tags">
+                    <span>Naruto</span>
+                    <span>One Piece</span>
+                    <span>Jujutsu Kaisen</span>
+                    <span>Solo Leveling</span>
+                </div>
+                <div class="hero-stage-panel hero-stage-stats">
+                    <div>
+                        <strong>3</strong>
+                        <small>linhas premium em estudo</small>
+                    </div>
+                    <div>
+                        <strong>4</strong>
+                        <small>universos com prioridade inicial</small>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="container story-grid">
-        <article class="surface-card stack-md">
-            <span class="eyebrow">Posicionamento</span>
-            <h2>@storyTitle</h2>
-            <p>@storyBody</p>
-        </article>
-        <article class="surface-card stack-md">
-            <span class="eyebrow">Estrutura dinamica</span>
-            <ul class="clean-list">
-                <li>Banner, cores, textos e chamadas trocam com a campanha vigente.</li>
-                <li>Produtos e pesquisa seguem o mesmo motor de configuracao.</li>
-                <li>Dia dos Pais e Natal ja podem assumir a plataforma sem refatorar a base.</li>
-            </ul>
-        </article>
-    </section>
-
-    <section class="container stack-lg">
+    <section class="container stack-lg products-showcase">
         <div class="section-heading">
             <div>
                 <span class="eyebrow">Produtos em desenvolvimento</span>
