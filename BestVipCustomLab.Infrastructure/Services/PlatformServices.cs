@@ -1,4 +1,4 @@
-using BestVipCustomLab.Application;
+﻿using BestVipCustomLab.Application;
 using BestVipCustomLab.Domain;
 using BestVipCustomLab.Infrastructure.Persistence;
 using BestVipCustomLab.Infrastructure.Security;
@@ -591,21 +591,37 @@ internal sealed class DashboardService(AppDbContext dbContext) : IDashboardServi
 
     public async Task<IReadOnlyList<GeographicStatDto>> GetGeographicBreakdownAsync(CancellationToken cancellationToken = default)
     {
-        return await dbContext.Visitors
-            .GroupBy(x => x.State)
+        var states = await dbContext.Visitors
+            .AsNoTracking()
+            .Select(x => x.State)
+            .ToListAsync(cancellationToken);
+
+        return states
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .GroupBy(x => x)
             .Select(group => new GeographicStatDto(group.Key, group.Count()))
             .OrderByDescending(x => x.Count)
-            .ToListAsync(cancellationToken);
+            .ThenBy(x => x.State)
+            .ToList();
     }
 
     public async Task<IReadOnlyList<TrafficSourceStatDto>> GetTrafficSourceBreakdownAsync(CancellationToken cancellationToken = default)
     {
-        return await dbContext.Visitors
-            .GroupJoin(dbContext.TrafficSources, visitor => visitor.TrafficSourceId, source => source.Id, (visitor, sources) => new { visitor, source = sources.FirstOrDefault() })
-            .GroupBy(x => x.source != null ? x.source.Name : "Não informado")
+        var trafficSources = await dbContext.Visitors
+            .AsNoTracking()
+            .GroupJoin(
+                dbContext.TrafficSources.AsNoTracking(),
+                visitor => visitor.TrafficSourceId,
+                source => source.Id,
+                (visitor, sources) => sources.Select(source => source.Name).FirstOrDefault() ?? "Não informado")
+            .ToListAsync(cancellationToken);
+
+        return trafficSources
+            .GroupBy(x => x)
             .Select(group => new TrafficSourceStatDto(group.Key, group.Count()))
             .OrderByDescending(x => x.Count)
-            .ToListAsync(cancellationToken);
+            .ThenBy(x => x.Source)
+            .ToList();
     }
 }
 
@@ -624,3 +640,4 @@ internal sealed class InteractionService(AppDbContext dbContext) : IInteractionS
         await dbContext.SaveChangesAsync(cancellationToken);
     }
 }
+

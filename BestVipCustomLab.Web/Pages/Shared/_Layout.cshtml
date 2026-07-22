@@ -55,6 +55,11 @@
             <nav class="nav-links">
                 <a href="/">Campanha Atual</a>
                 <a href="/Register">Cadastro</a>
+                <a href="/Survey">Pesquisa</a>
+                <a href="/Vip">Lista VIP</a>
+                <a href="/About">Sobre</a>
+                <a href="/Privacy">Privacidade</a>
+                <a href="/Contact">Contato</a>
                 @if (isParticipantAuthenticated)
                 {
                     <div class="user-menu" data-user-menu>
@@ -74,12 +79,6 @@
                 {
                     <a href="/Account/Login">Entrar</a>
                 }
-                <a href="/Survey">Pesquisa</a>
-                <a href="/Vip">Lista VIP</a>
-                <a href="/About">Sobre</a>
-                <a href="/Privacy">Privacidade</a>
-                <a href="/Contact">Contato</a>
-                <a href="/Admin">Admin</a>
             </nav>
         </div>
     </header>
@@ -106,3 +105,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
