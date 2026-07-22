@@ -1,6 +1,7 @@
 using BestVipCustomLab.Application;
 using BestVipCustomLab.Infrastructure;
 using BestVipCustomLab.Web.Infrastructure;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 
@@ -17,7 +18,12 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToPage("/Account/Login");
 });
 
-builder.Services.AddAuthentication()
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = AuthSchemes.UserScheme;
+        options.DefaultChallengeScheme = AuthSchemes.UserScheme;
+        options.DefaultSignInScheme = AuthSchemes.UserScheme;
+    })
     .AddCookie(AuthSchemes.UserScheme, options =>
     {
         options.LoginPath = "/Account/Login";
@@ -70,6 +76,12 @@ app.MapGet("/api/campaigns/active", async (ICampaignExperienceService service, C
     var campaign = await service.GetActiveCampaignAsync(cancellationToken);
     return campaign is null ? Results.NotFound() : Results.Ok(campaign);
 });
+
+app.MapGet("/Account/Logout", async (HttpContext httpContext) =>
+{
+    await httpContext.SignOutAsync(AuthSchemes.UserScheme);
+    return Results.LocalRedirect("/");
+}).RequireAuthorization(AuthSchemes.UserPolicy);
 
 app.MapPost("/api/visitors/register", async (
     VisitorRegistrationRequest request,

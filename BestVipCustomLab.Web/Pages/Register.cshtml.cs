@@ -66,7 +66,7 @@ public sealed class RegisterModel(
         {
             new Claim(ClaimTypes.NameIdentifier, result.VisitorId.ToString()),
             new Claim(ClaimTypes.Email, result.Email),
-            new Claim(ClaimTypes.Name, Input.FirstName)
+            new Claim(ClaimTypes.Name, $"{Input.FirstName} {Input.LastName}".Trim())
         };
 
         var identity = new ClaimsIdentity(claims, AuthSchemes.UserScheme);

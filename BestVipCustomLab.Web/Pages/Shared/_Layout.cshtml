@@ -9,6 +9,9 @@
     var gradientEnd = campaign?.Theme.GradientEnd ?? "#080808";
     var text = campaign?.Theme.TextColor ?? "#f5efe7";
     var muted = campaign?.Theme.MutedTextColor ?? "#b6aa9b";
+    var participantName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    var participantId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isParticipantAuthenticated = User.Identity?.IsAuthenticated == true && !string.IsNullOrWhiteSpace(participantId);
 }
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -52,7 +55,25 @@
             <nav class="nav-links">
                 <a href="/">Campanha Atual</a>
                 <a href="/Register">Cadastro</a>
-                <a href="/Account/Login">Entrar</a>
+                @if (isParticipantAuthenticated)
+                {
+                    <div class="user-menu" data-user-menu>
+                        <button class="user-menu-trigger" type="button" data-user-menu-trigger aria-expanded="false">
+                            <span class="user-menu-label">Olá,</span>
+                            <strong>@participantName</strong>
+                        </button>
+                        <div class="user-menu-modal" data-user-menu-modal hidden>
+                            <p class="user-menu-title">@participantName</p>
+                            <a class="user-menu-link" href="/Survey">Continuar pesquisa</a>
+                            <a class="user-menu-link" href="/Vip">Minha Lista VIP</a>
+                            <a class="user-menu-link user-menu-logout" href="/Account/Logout">Logout</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a href="/Account/Login">Entrar</a>
+                }
                 <a href="/Survey">Pesquisa</a>
                 <a href="/Vip">Lista VIP</a>
                 <a href="/About">Sobre</a>
