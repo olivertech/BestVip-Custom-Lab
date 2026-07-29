@@ -322,7 +322,7 @@ internal sealed class VisitorService(
             return null;
         }
 
-        var redirectUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/Survey" : returnUrl;
+        var redirectUrl = string.IsNullOrWhiteSpace(returnUrl) ? "/" : returnUrl;
         return new VisitorLoginResultDto(visitor.Id, visitor.Email, $"{visitor.FirstName} {visitor.LastName}".Trim(), redirectUrl);
     }
 
@@ -385,6 +385,18 @@ internal sealed class SurveyService(
     IValidator<SurveySubmissionRequest> submissionValidator,
     IValidator<SurveyQuestionUpsertRequest> questionValidator) : ISurveyService
 {
+    public async Task<SurveyParticipationStatusDto> GetParticipationStatusAsync(Guid campaignId, Guid visitorId, CancellationToken cancellationToken = default)
+    {
+        var submittedAtUtc = await dbContext.SurveyResponses
+            .AsNoTracking()
+            .Where(x => x.CampaignId == campaignId && x.VisitorId == visitorId)
+            .OrderByDescending(x => x.SubmittedAtUtc)
+            .Select(x => (DateTimeOffset?)x.SubmittedAtUtc)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return new SurveyParticipationStatusDto(submittedAtUtc.HasValue, submittedAtUtc);
+    }
+
     public async Task<IReadOnlyList<SurveyQuestionAdminDto>> GetAdminQuestionsAsync(Guid campaignId, CancellationToken cancellationToken = default)
     {
         return await dbContext.SurveyQuestions
@@ -475,6 +487,15 @@ internal sealed class SurveyService(
         if (!visitorExists)
         {
             throw new ValidationException("Visitante não encontrado.");
+        }
+
+        var alreadySubmitted = await dbContext.SurveyResponses
+            .AsNoTracking()
+            .AnyAsync(x => x.CampaignId == campaign.Id && x.VisitorId == request.VisitorId, cancellationToken);
+
+        if (alreadySubmitted)
+        {
+            throw new ValidationException("Você já respondeu esta pesquisa e não pode alterá-la depois da confirmação final.");
         }
 
         var response = new SurveyResponse

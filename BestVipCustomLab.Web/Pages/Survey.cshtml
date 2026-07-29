@@ -22,49 +22,81 @@ else
             {
                 <p class="success-badge">@Model.SuccessMessage</p>
             }
+            @if (Model.HasSubmittedCurrentSurvey)
+            {
+                <p class="survey-status-badge">
+                    Você já respondeu esta pesquisa
+                    @if (Model.SubmittedAtUtc.HasValue)
+                    {
+                        <span>em @Model.SubmittedAtUtc.Value.ToLocalTime().ToString("dd/MM/yyyy 'às' HH:mm")</span>
+                    }.
+                    Suas respostas já foram confirmadas e não podem mais ser alteradas.
+                </p>
+            }
         </div>
 
-        <form method="post" class="surface-card survey-form stack-lg">
-            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-            <input asp-for="Input.VisitorId" type="hidden" />
+        @if (!Model.HasSubmittedCurrentSurvey)
+        {
+            <form method="post" class="surface-card survey-form stack-lg" data-survey-confirm-form>
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+                <input asp-for="Input.VisitorId" type="hidden" />
 
-            @for (var index = 0; index < campaign.Questions.Count; index++)
-            {
-                var question = campaign.Questions[index];
-                <input name="Input.Answers[@index].QuestionId" type="hidden" value="@question.Id" />
-                <section class="survey-question">
-                    <div class="stack-sm">
-                        <h3>@question.Prompt</h3>
-                        <p>@question.HelpText</p>
-                    </div>
-
-                    @if (question.Type == BestVipCustomLab.Domain.SurveyQuestionType.Text)
-                    {
-                        <textarea class="survey-textarea" name="Input.Answers[@index].Value" rows="5" placeholder="Escreva sua resposta com liberdade."></textarea>
-                    }
-                    else
-                    {
-                        <div class="option-grid">
-                            @foreach (var option in question.Options)
-                            {
-                                <label class="choice-card">
-                                    <input
-                                        type="radio"
-                                        name="Input.Answers[@index].Value"
-                                        value="@option.Label" />
-                                    <span class="choice-card-body">
-                                        <span class="choice-indicator"></span>
-                                        <span class="choice-label">@option.Label</span>
-                                    </span>
-                                </label>
-                            }
+                @for (var index = 0; index < campaign.Questions.Count; index++)
+                {
+                    var question = campaign.Questions[index];
+                    <input name="Input.Answers[@index].QuestionId" type="hidden" value="@question.Id" />
+                    <section class="survey-question">
+                        <div class="stack-sm">
+                            <h3>@question.Prompt</h3>
+                            <p>@question.HelpText</p>
                         </div>
-                    }
-                </section>
-            }
 
-            <button class="button button-primary" type="submit">Enviar pesquisa</button>
-        </form>
+                        @if (question.Type == BestVipCustomLab.Domain.SurveyQuestionType.Text)
+                        {
+                            <textarea class="survey-textarea" name="Input.Answers[@index].Value" rows="5" placeholder="Escreva sua resposta com liberdade."></textarea>
+                        }
+                        else
+                        {
+                            <div class="option-grid">
+                                @foreach (var option in question.Options)
+                                {
+                                    <label class="choice-card">
+                                        <input
+                                            type="radio"
+                                            name="Input.Answers[@index].Value"
+                                            value="@option.Label" />
+                                        <span class="choice-card-body">
+                                            <span class="choice-indicator"></span>
+                                            <span class="choice-label">@option.Label</span>
+                                        </span>
+                                    </label>
+                                }
+                            </div>
+                        }
+                    </section>
+                }
+
+                <p class="survey-confirmation-note">
+                    Ao confirmar o envio, suas respostas ficam registradas em definitivo e esta pesquisa não poderá ser refeita.
+                </p>
+                <button class="button button-primary" type="submit">Enviar pesquisa</button>
+
+                <div class="survey-confirm-modal" data-survey-confirm-modal hidden>
+                    <div class="survey-confirm-modal__backdrop" data-survey-confirm-cancel></div>
+                    <div class="survey-confirm-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="survey-confirm-title">
+                        <span class="eyebrow">Confirmação final</span>
+                        <h2 id="survey-confirm-title">Deseja concluir esta pesquisa?</h2>
+                        <p>
+                            Ao clicar em confirmar, suas respostas serão registradas em definitivo e você não poderá editar nem reenviar esta pesquisa depois.
+                        </p>
+                        <div class="survey-confirm-modal__actions">
+                            <button type="button" class="button button-secondary" data-survey-confirm-cancel>Voltar e revisar</button>
+                            <button type="button" class="button button-primary" data-survey-confirm-accept>Confirmar envio</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
     </section>
 }
 

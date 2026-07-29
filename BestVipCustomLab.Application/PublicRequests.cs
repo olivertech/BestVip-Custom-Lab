@@ -27,7 +27,7 @@ public sealed class VisitorLoginRequest
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
-    public string ReturnUrl { get; set; } = "/Survey";
+    public string ReturnUrl { get; set; } = "/";
 }
 
 public sealed record VisitorLoginResultDto(Guid VisitorId, string Email, string FullName, string RedirectUrl);
@@ -51,6 +51,8 @@ public sealed class SurveySubmissionRequest
     public Guid VisitorId { get; set; }
     public List<SurveyAnswerInput> Answers { get; set; } = [];
 }
+
+public sealed record SurveyParticipationStatusDto(bool HasSubmitted, DateTimeOffset? SubmittedAtUtc);
 
 public sealed class VipInterestRequest
 {

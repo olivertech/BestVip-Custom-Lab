@@ -1,0 +1,14 @@
+﻿{
+  "name": "bestvip-custom-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BestVip Custom Lab - aplicacao ASP.NET Core 10 com Razor Pages",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "dotnet publish ./BestVipCustomLab.Web/BestVipCustomLab.Web.csproj -c Release -o ./publish",
+    "start": "dotnet ./publish/BestVipCustomLab.Web.dll",
+    "dev": "dotnet run --project ./BestVipCustomLab.Web/BestVipCustomLab.Web.csproj"
+  }
+}

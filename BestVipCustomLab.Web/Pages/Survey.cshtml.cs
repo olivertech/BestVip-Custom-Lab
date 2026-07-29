@@ -13,13 +13,17 @@ public sealed class SurveyModel(
     CampaignContextAccessor campaignContextAccessor,
     ISurveyService surveyService) : PageModel
 {
+    [TempData]
+    public string? SuccessMessage { get; set; }
+
     [BindProperty]
     public SurveySubmissionRequest Input { get; set; } = new();
 
     public ActiveCampaignDto? Campaign { get; private set; }
-    public string? SuccessMessage { get; private set; }
+    public bool HasSubmittedCurrentSurvey { get; private set; }
+    public DateTimeOffset? SubmittedAtUtc { get; private set; }
 
-    public IActionResult OnGet()
+    public async Task<IActionResult> OnGetAsync()
     {
         Campaign = campaignContextAccessor.ActiveCampaign;
         var visitorId = TryGetVisitorId();
@@ -29,6 +33,7 @@ public sealed class SurveyModel(
         }
 
         Input.VisitorId = visitorId.Value;
+        await LoadParticipationAsync(visitorId.Value);
         return Page();
     }
 
@@ -47,14 +52,19 @@ public sealed class SurveyModel(
         }
 
         Input.VisitorId = visitorId.Value;
+        await LoadParticipationAsync(visitorId.Value);
+
+        if (HasSubmittedCurrentSurvey)
+        {
+            ModelState.AddModelError(string.Empty, "Você já respondeu esta pesquisa e não pode enviá-la novamente.");
+            return Page();
+        }
 
         try
         {
             await surveyService.SubmitSurveyAsync(Campaign.Slug, Input, HttpContext.RequestAborted);
-            SuccessMessage = "Pesquisa enviada com sucesso. Obrigado por ajudar a decidir os próximos produtos.";
-            ModelState.Clear();
-            Input = new SurveySubmissionRequest { VisitorId = visitorId.Value };
-            return Page();
+            SuccessMessage = "Pesquisa enviada com sucesso. Suas respostas foram confirmadas e não poderão mais ser alteradas.";
+            return RedirectToPage("/Survey");
         }
         catch (ValidationException exception)
         {
@@ -67,5 +77,19 @@ public sealed class SurveyModel(
     {
         var rawValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(rawValue, out var visitorId) ? visitorId : null;
+    }
+
+    private async Task LoadParticipationAsync(Guid visitorId)
+    {
+        if (Campaign is null)
+        {
+            HasSubmittedCurrentSurvey = false;
+            SubmittedAtUtc = null;
+            return;
+        }
+
+        var participation = await surveyService.GetParticipationStatusAsync(Campaign.Id, visitorId, HttpContext.RequestAborted);
+        HasSubmittedCurrentSurvey = participation.HasSubmitted;
+        SubmittedAtUtc = participation.SubmittedAtUtc;
     }
 }

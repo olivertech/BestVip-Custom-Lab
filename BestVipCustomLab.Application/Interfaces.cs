@@ -25,6 +25,7 @@ public interface IAdminAuthService
 
 public interface ISurveyService
 {
+    Task<SurveyParticipationStatusDto> GetParticipationStatusAsync(Guid campaignId, Guid visitorId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<SurveyQuestionAdminDto>> GetAdminQuestionsAsync(Guid campaignId, CancellationToken cancellationToken = default);
     Task<SurveyQuestionUpsertRequest?> GetQuestionForEditAsync(Guid questionId, CancellationToken cancellationToken = default);
     Task<Guid> UpsertQuestionAsync(SurveyQuestionUpsertRequest request, CancellationToken cancellationToken = default);

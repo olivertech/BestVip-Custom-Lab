@@ -1,4 +1,4 @@
-document.documentElement.classList.add("js-ready");
+﻿document.documentElement.classList.add("js-ready");
 
 document.querySelectorAll('[data-mask="whatsapp"]').forEach((input) => {
     const applyMask = () => {
@@ -58,6 +58,54 @@ document.querySelectorAll("[data-user-menu]").forEach((menu) => {
     document.addEventListener("click", (event) => {
         if (!menu.contains(event.target)) {
             closeMenu();
+        }
+    });
+});
+
+document.querySelectorAll("[data-survey-confirm-form]").forEach((form) => {
+    const modal = form.querySelector("[data-survey-confirm-modal]");
+    const acceptButton = form.querySelector("[data-survey-confirm-accept]");
+    const cancelButtons = form.querySelectorAll("[data-survey-confirm-cancel]");
+
+    if (!modal || !acceptButton || cancelButtons.length === 0) {
+        return;
+    }
+
+    let isConfirmedSubmit = false;
+
+    const closeModal = () => {
+        modal.hidden = true;
+        document.body.classList.remove("modal-open");
+    };
+
+    const openModal = () => {
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+    };
+
+    form.addEventListener("submit", (event) => {
+        if (isConfirmedSubmit) {
+            isConfirmedSubmit = false;
+            return;
+        }
+
+        event.preventDefault();
+        openModal();
+    });
+
+    acceptButton.addEventListener("click", () => {
+        isConfirmedSubmit = true;
+        closeModal();
+        form.requestSubmit();
+    });
+
+    cancelButtons.forEach((button) => {
+        button.addEventListener("click", closeModal);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !modal.hidden) {
+            closeModal();
         }
     });
 });

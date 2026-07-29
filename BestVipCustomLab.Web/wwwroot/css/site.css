@@ -143,6 +143,66 @@ textarea { resize: vertical; }
 .checkbox a { color: var(--brand-gold); text-decoration: underline; }
 .validation-summary { color: #ffd6d6; }
 .success-badge { color: #d7ffd0; }
+.survey-status-badge,
+.survey-confirmation-note {
+    margin: 0;
+    padding: 1rem 1.1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(212,175,55,.18);
+    background: rgba(212,175,55,.08);
+    color: var(--brand-ivory);
+}
+.survey-status-badge span {
+    color: var(--brand-gold);
+    font-weight: 600;
+}
+.survey-confirm-modal[hidden] {
+    display: none;
+}
+.survey-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+}
+.survey-confirm-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 6, 6, .76);
+    backdrop-filter: blur(4px);
+}
+.survey-confirm-modal__dialog {
+    position: relative;
+    width: min(560px, 100%);
+    padding: 1.5rem;
+    border-radius: 1.4rem;
+    border: 1px solid rgba(212,175,55,.24);
+    background:
+        radial-gradient(circle at top right, rgba(0,245,255,.08), transparent 30%),
+        linear-gradient(180deg, rgba(30, 24, 19, .98), rgba(17, 14, 11, .98));
+    box-shadow: 0 24px 80px rgba(0,0,0,.42);
+}
+.survey-confirm-modal__dialog h2 {
+    margin: .5rem 0 .85rem;
+}
+.survey-confirm-modal__dialog p {
+    margin: 0;
+    color: var(--brand-muted);
+    line-height: 1.7;
+}
+.survey-confirm-modal__actions {
+    display: flex;
+    gap: .9rem;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+.survey-confirm-modal__actions .button {
+    min-width: 170px;
+    justify-content: center;
+}
 .question-block { padding: 1rem 0; border-top: 1px solid rgba(255,255,255,.08); }
 .option-chip { display: flex; gap: .6rem; align-items: center; padding: .6rem 0; }
 .survey-form {

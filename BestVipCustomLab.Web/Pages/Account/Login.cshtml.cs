@@ -13,7 +13,7 @@ namespace BestVipCustomLab.Web.Pages.Account;
 public sealed class LoginModel(IVisitorService visitorService) : PageModel
 {
     [BindProperty(SupportsGet = true)]
-    public string ReturnUrl { get; set; } = "/Survey";
+    public string ReturnUrl { get; set; } = "/";
 
     [BindProperty]
     public VisitorLoginRequest Input { get; set; } = new();
